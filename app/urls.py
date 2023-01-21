@@ -7,5 +7,4 @@ app_name = AppConfig.name
 
 urlpatterns = [
     path('', all_products),
-    # path('contacts/', contacts)
 ]
