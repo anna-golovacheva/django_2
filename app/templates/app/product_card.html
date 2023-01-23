@@ -1,0 +1,23 @@
+{% extends 'app/base.html' %}
+
+{% block content %}
+    {% load tagss %}
+    <div class="container">
+        <div class="card text-center">
+          <div class="card-header">
+              {{ object.name }}
+          </div>
+          <div class="card-body">
+            <h5 class="card-title">Цена: {{ object.price }}</h5>
+              <img src="{% mediapath object.image %}"  class="rounded mx-auto d-block" alt="" height="300">
+            <p class="card-text">Описание: {{ object.description }}</p>
+            <a href="{% url 'products:index' %}" class="btn btn-secondary">Все товары</a>
+          </div>
+          <div class="card-footer text-muted">
+            Создан: {{ object.created_date }}
+              <br>
+              Изменен: {{ object.changed_date }}
+          </div>
+        </div>
+    </div>>
+{% endblock %}

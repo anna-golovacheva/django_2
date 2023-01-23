@@ -1,0 +1,17 @@
+{% load static %}
+
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>app</title>
+    <link href="{% static "css/bootstrap.css" %}" rel="stylesheet">
+  </head>
+  <body>
+  {% include 'app/includes/main_menu.html' %}
+    {% block content %}
+    {% endblock %}
+    <script src="{% static "js/bootstrap.bundle.js" %} "> </script>
+  </body>
+</html>

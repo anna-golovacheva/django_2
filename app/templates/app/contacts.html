@@ -1,0 +1,27 @@
+{% extends 'app/base.html' %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-3">
+            <div class="container">
+                <form method="post" action="" class="form-floating">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="exampleFormControlTextarea1" class="form-label">Ваше имя</label>
+                        <textarea class="form-control" name="name" id="exampleFormControlTextarea1" rows="1"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="exampleInputEmail1" class="form-label">Ваш email</label>
+                        <input type="email" name="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+                    </div>
+                    <div class="mb-3">
+                        <label for="exampleFormControlTextarea1" class="form-label">Ваше сообщение</label>
+                        <textarea class="form-control" name="message" id="exampleFormControlTextarea1" rows="3"></textarea>
+                        <br>
+                        <button type="submit" class="btn btn-secondary">Отправить</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

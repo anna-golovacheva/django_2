@@ -13,3 +13,18 @@ def all_products(request):
         'object_list': products
     }
     return render(request, 'app/index.html', context)
+
+
+def contacts(request):
+    if request.method == 'POST':
+        print(request.POST.get('name'))
+        print(request.POST.get('email'))
+        print(request.POST.get('message'))
+    return render(request, 'app/contacts.html')
+
+
+def product_card(request, pr_id):
+    product = Product.objects.get(pk=pr_id)
+    context = {'object': product}
+    return render(request, 'app/product_card.html', context)
+
