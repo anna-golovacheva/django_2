@@ -1,0 +1,24 @@
+{% extends 'app/base.html' %}
+
+{% block content %}
+    <br>
+    <div class="container">
+    <div class="row">
+        <div class="col-4">
+            <div class="card">
+                <div class="card-body">
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <p>
+                            Вы действительно хотите удалить запись {{ object.title }}?
+                        </p>
+                        <a href="{% url 'products:records' %}" class="btn btn-outline-secondary" style="width:150px">Отменить удаление</a>
+
+                        <button class="btn btn-outline-danger" type="submit" style="width:150px">Подтвердить удаление</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,26 @@
+{% extends 'app/base.html' %}
+
+{% block content %}
+    {% load tagss %}
+    <div class="container">
+        <div class="card text-center">
+          <div class="card-header">
+              {{ object.title }}
+          </div>
+          <div class="card-body">
+            <h5 class="card-title">{{ object.content }}</h5>
+              <img src="{% mediapath object.preview %}"  class="rounded mx-auto d-block" alt="" height="300">
+            <p class="card-text">Просмотры: {{ object.views_count }}</p>
+              <a href="{% url 'products:update_record' object.slug %}" class="btn btn-outline-secondary">Изменить запись</a>
+              <a href="{% url 'products:delete_record' object.slug %}" class="btn btn-outline-danger">Удалить запись</a>
+              <br><br>
+              <a href="{% url 'products:records' %}" class="btn btn-secondary">Все записи</a>
+          </div>
+          <div class="card-footer text-muted">
+            Создана: {{ object.created_date }}
+              <br>
+              Опубликована: {{ object.published }}
+          </div>
+        </div>
+    </div>>
+{% endblock %}

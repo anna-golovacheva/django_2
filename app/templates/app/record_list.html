@@ -1,0 +1,42 @@
+{% extends 'app/base.html' %}
+{% block content %}
+    {% load tagss %}
+<div class="container">
+        <h1 class="text-center">Список записей</h1>
+      <table class="table">
+        <thead>
+          <tr>
+            <th scope="col" style="text-align: center">ID</th>
+            <th scope="col" style="text-align: center">Заголовок</th>
+            <th scope="col" style="text-align: center">Содержание</th>
+            <th scope="col" style="text-align: center">Превью</th>
+            <th scope="col">Просмотры</th>
+
+          </tr>
+        </thead>
+        <tbody class="table-group-divider table-divider-primary">
+
+          {% for item in object_list %}
+              {% if item.published == True %}
+          <tr>
+            <th scope="row">{{ item.pk }}</th>
+            <td>{{ item.title }}</td>
+            <td>{{ item.content|truncatechars:100 }}</td>
+            <td>
+                <img src="{% mediapath item.preview %}"  class="rounded mx-auto d-block" alt="" height="100">
+            </td>
+            <td style="text-align: center">{{ item.views_count }}</td>
+              <td><a href="{% url 'products:record_card' item.slug %}" class="btn btn-secondary">Перейти к записи</a></td>
+
+          </tr>
+              {% endif %}
+          {% endfor %}
+        </tbody>
+      </table>
+        <div class="container" style="text-align: center">
+
+                <a href="{% url 'products:create_record' %}" class="btn btn-outline-secondary">Создать запись</a>
+
+        </div>
+    </div>
+{% endblock %}
