@@ -1,24 +1,14 @@
 from django.conf import settings
 from django.core.mail import send_mail
+from django.db import transaction
+from django.forms import inlineformset_factory
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, \
     DeleteView
 from django.shortcuts import render
-from app.models import Product, Record
+
+from app.forms import ProductForm, VersionForm
+from app.models import Product, Record, Version
 from django.urls import reverse_lazy, reverse
-
-
-# def all_products(request):
-#     products = Product.objects.order_by('created_date')[:5]
-#     for product in products:
-#         print(product)
-#     context = {
-#         'object_list': products
-#     }
-#     return render(request, 'app/product_list.html', context)
-
-
-class ProductListView(ListView):
-    model = Product
 
 
 def contacts(request):
@@ -29,14 +19,61 @@ def contacts(request):
     return render(request, 'app/contacts.html')
 
 
-# def product_card(request, pr_id):
-#     product = Product.objects.get(pk=pr_id)
-#     context = {'object': product}
-#     return render(request, 'app/product_detail.html', context)
+class ProductCreateView(CreateView):
+    model = Product
+    form_class = ProductForm
+    success_url = reverse_lazy('app:index')
+
+
+class ProductUpdateView(UpdateView):
+    model = Product
+    form_class = ProductForm
+    success_url = reverse_lazy('app:index')
+
+
+class ProductUpdateWithVersionView(UpdateView):
+    model = Product
+    form_class = ProductForm
+    success_url = reverse_lazy('app:index')
+    template_name = 'app/product_with_version_form.html'
+
+    def get_context_data(self, **kwargs):
+        context_data = super().get_context_data(**kwargs)
+
+        FormSet = inlineformset_factory(self.model, Version, form=VersionForm, extra=1)
+
+        if self.request.method == 'POST':
+            formset = FormSet(self.request.POST, instance=self.object)
+        else:
+            formset = FormSet(instance=self.object)
+
+        context_data['formset'] = formset
+        return context_data
+
+    def form_valid(self, form):
+        context_data = self.get_context_data()
+        formset = context_data['formset']
+        with transaction.atomic():
+            if form.is_valid():
+                self.object = form.save()
+                if formset.is_valid():
+                    formset.instance = self.object
+                    formset.save()
+
+        return super().form_valid(form)
+
+
+class ProductListView(ListView):
+    model = Product
 
 
 class ProductDetailView(DetailView):
     model = Product
+
+
+class ProductDeleteView(DeleteView):
+    model = Product
+    success_url = reverse_lazy('app:index')
 
 
 class RecordListView(ListView):

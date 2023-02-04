@@ -1,5 +1,4 @@
 from django.db import models
-from autoslug import AutoSlugField
 from pytils.translit import slugify
 
 NULLABLE = {'blank': True, 'null': True}
@@ -55,5 +54,17 @@ class Record(models.Model):
             self.slug = slugify(self.title)
         super().save(*args, **kwargs)
 
+
+class Version(models.Model):
+    name = models.CharField(max_length=150, verbose_name='Название версии')
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, default=1, verbose_name='Продукт')
+    is_active = models.BooleanField(verbose_name='Текущая версия')
+
+    class Meta:
+        verbose_name = 'Версия'
+        verbose_name_plural = 'Версии'
+
+    def __str__(self):
+        return self.name
 
 

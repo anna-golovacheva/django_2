@@ -10,6 +10,7 @@
             <th scope="col">Описание</th>
             <th scope="col">Категория</th>
             <th scope="col">Цена</th>
+              <th scope="col">Версия</th>
           </tr>
         </thead>
         <tbody class="table-group-divider table-divider-primary">
@@ -21,11 +22,23 @@
             <td>{{ item.description|truncatechars:100 }}</td>
             <td>{{ item.category.name }}</td>
             <td>{{ item.price }}</td>
+              <td>
+                  {% for v in item.version_set.all %}
+                      {% if v.is_active %}
+                      {{ v.name }}
+                      {% endif %}
+                  {% endfor %}
+
+              </td>
               <td><a href="{% url 'products:product_card' item.pk %}" class="btn btn-secondary">Перейти к товару</a></td>
 
           </tr>
           {% endfor %}
         </tbody>
       </table>
+        <div class="container" style="text-align: center">
+
+                <a href="{% url 'products:create_product' %}" class="btn btn-outline-secondary">Создать продукт</a>
+        </div>
     </div>
 {% endblock %}
