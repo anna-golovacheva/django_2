@@ -11,9 +11,11 @@
             <h5 class="card-title">Цена: {{ object.price }}</h5>
               <img src="{% mediapath object.image %}"  class="rounded mx-auto d-block" alt="" height="300">
             <p class="card-text">Описание: {{ object.description }}</p>
+              {% if user.authenticated %}
               <a href="{% url 'products:update_product' object.pk %}" class="btn btn-outline-secondary">Изменить продукт</a>
                 <a href="{% url 'products:delete_product' object.pk %}" class="btn btn-outline-danger">Удалить продукт</a>
-            <br><br>
+                {% endif %}
+              <br><br>
               <a href="{% url 'products:index' %}" class="btn btn-secondary">Все товары</a>
           </div>
           <div class="card-footer text-muted">

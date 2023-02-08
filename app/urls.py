@@ -1,3 +1,4 @@
+from django.contrib.auth.decorators import login_required
 from django.urls import path
 
 from app.apps import AppConfig
@@ -11,10 +12,10 @@ app_name = AppConfig.name
 urlpatterns = [
     path('', ProductListView.as_view(), name='index'),
     path('contacts/', contacts, name='contacts'),
-    path('product_create/', ProductCreateView.as_view(), name='create_product'),
-    path('product_update/<int:pk>/', ProductUpdateWithVersionView.as_view(), name='update_product'),
+    path('product_create/', login_required(ProductCreateView.as_view()), name='create_product'),
+    path('product_update/<int:pk>/', login_required(ProductUpdateWithVersionView.as_view()), name='update_product'),
     path('<int:pk>/', ProductDetailView.as_view(), name='product_card'),
-    path('product_delete/<int:pk>/', ProductDeleteView.as_view(), name='delete_product'),
+    path('product_delete/<int:pk>/', login_required(ProductDeleteView.as_view()), name='delete_product'),
     path('records/', RecordListView.as_view(), name='records'),
     path('records/<slug:slug>/', RecordDetailView.as_view(), name='record_card'),
     path('records_create/', RecordCreateView.as_view(), name='create_record'),

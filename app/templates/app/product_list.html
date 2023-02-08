@@ -37,8 +37,10 @@
         </tbody>
       </table>
         <div class="container" style="text-align: center">
-
+            {% if user.is_authenticated %}
                 <a href="{% url 'products:create_product' %}" class="btn btn-outline-secondary">Создать продукт</a>
+
+            {% endif %}
         </div>
     </div>
 {% endblock %}

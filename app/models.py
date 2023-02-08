@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.db import models
 from pytils.translit import slugify
 
@@ -22,6 +23,7 @@ class Product(models.Model):
     image = models.ImageField(upload_to='products/', **NULLABLE, verbose_name='Изображение')
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     price = models.FloatField(verbose_name='Цена за покупку')
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, **NULLABLE)
     created_date = models.DateField(auto_now_add=True, verbose_name='Дата создания')
     changed_date = models.DateField(auto_now=True, verbose_name='Дата последнего изменения')
 
