@@ -4,8 +4,9 @@ from django.urls import path
 from app.apps import AppConfig
 from app.views import contacts, ProductListView, ProductDetailView, \
     RecordCreateView, RecordUpdateView, RecordListView, RecordDetailView, \
-    RecordDeleteView, ProductCreateView, ProductUpdateView, \
-    ProductUpdateWithVersionView, ProductDeleteView
+    RecordDeleteView, ProductCreateView, ProductUpdateWithVersionView, \
+    ProductDeleteView, change_is_published, ProductDescriptionUpdateView, \
+    ProductCategoryUpdateView
 
 app_name = AppConfig.name
 
@@ -14,7 +15,10 @@ urlpatterns = [
     path('contacts/', contacts, name='contacts'),
     path('product_create/', login_required(ProductCreateView.as_view()), name='create_product'),
     path('product_update/<int:pk>/', login_required(ProductUpdateWithVersionView.as_view()), name='update_product'),
+    path('product_update_description/<int:pk>/', login_required(ProductDescriptionUpdateView.as_view()), name='update_product_description'),
+    path('product_update_category/<int:pk>/', login_required(ProductCategoryUpdateView.as_view()), name='update_product_category'),
     path('<int:pk>/', ProductDetailView.as_view(), name='product_card'),
+    path('is_published/<int:pk>/', change_is_published, name='change_is_published'),
     path('product_delete/<int:pk>/', login_required(ProductDeleteView.as_view()), name='delete_product'),
     path('records/', RecordListView.as_view(), name='records'),
     path('records/<slug:slug>/', RecordDetailView.as_view(), name='record_card'),

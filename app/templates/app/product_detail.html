@@ -4,25 +4,47 @@
     {% load tagss %}
     <div class="container">
         <div class="card text-center">
-          <div class="card-header">
-              {{ object.name }}
-          </div>
-          <div class="card-body">
-            <h5 class="card-title">Цена: {{ object.price }}</h5>
-              <img src="{% mediapath object.image %}"  class="rounded mx-auto d-block" alt="" height="300">
-            <p class="card-text">Описание: {{ object.description }}</p>
-              {% if user.authenticated %}
-              <a href="{% url 'products:update_product' object.pk %}" class="btn btn-outline-secondary">Изменить продукт</a>
-                <a href="{% url 'products:delete_product' object.pk %}" class="btn btn-outline-danger">Удалить продукт</a>
+            <div class="card-header">
+                {{ object.name }}
+            </div>
+            <div class="card-body">
+                <h5 class="card-title">Цена: {{ object.price }}</h5>
+                <img src="{% mediapath object.image %}" class="rounded mx-auto d-block" alt="" height="300">
+                <p class="card-text">Описание: {{ object.description }}</p>
+                {% if perms.app.change_description %}
+                    <a href="{% url 'products:update_product_description' object.pk %}" class="btn btn-outline-secondary">Изменить описание</a>
                 {% endif %}
-              <br><br>
-              <a href="{% url 'products:index' %}" class="btn btn-secondary">Все товары</a>
-          </div>
-          <div class="card-footer text-muted">
-            Создан: {{ object.created_date }}
-              <br>
-              Изменен: {{ object.changed_date }}
-          </div>
+
+            <p class="card-text">Категория: {{ object.category.name }}</p>
+            {% if perms.app.change_category %}
+                    <a href="{% url 'products:update_product_category' object.pk %}" class="btn btn-outline-secondary">Изменить категорию</a>
+                {% endif %}
+                {% if perms.app.change_product or object.user == user %}
+                    <a href="{% url 'products:update_product' object.pk %}" class="btn btn-outline-secondary">Изменить
+                        продукт</a>
+                {% endif %}
+                {% if perms.app.delete_product %}
+                    <a href="{% url 'products:delete_product' object.pk %}" class="btn btn-outline-danger">Удалить
+                        продукт</a>
+                {% endif %}
+                <br><br>
+                <a href="{% url 'products:index' %}" class="btn btn-secondary">Все товары</a>
+            </div>
+            <div class="card-footer text-muted">
+                Создан: {{ object.created_date }}
+                <br>
+                Изменен: {{ object.changed_date }}
+                <br>
+                Товар {{ object.get_is_published_display }}
+                {% if perms.app.set_published %}
+                    {% if object.is_published == 'published' %}
+                        <a href="{% url 'app:change_is_published' object.pk %}" class="btn btn-outline-danger">Снять с
+                            публикации</a>
+                    {% else %}
+                        <a href="{% url 'app:change_is_published' object.pk %}" class="btn btn-outline-primary">Опубликовать</a>
+                    {% endif %}
+                {% endif %}
+            </div>
         </div>
     </div>>
 {% endblock %}

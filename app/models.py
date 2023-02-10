@@ -18,18 +18,38 @@ class Category(models.Model):
 
 
 class Product(models.Model):
+    PUBLISHED = 'published'
+    NOT_PUBLISHED = 'not published'
+    PUBLISH_CHOICES = [(PUBLISHED, 'опубликован'), (NOT_PUBLISHED, 'не опубликован')]
+
     name = models.CharField(max_length=250, verbose_name='Название')
     description = models.CharField(max_length=500, verbose_name='Описание')
     image = models.ImageField(upload_to='products/', **NULLABLE, verbose_name='Изображение')
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     price = models.FloatField(verbose_name='Цена за покупку')
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, **NULLABLE)
+    is_published = models.CharField(max_length=20, choices=PUBLISH_CHOICES, default=NOT_PUBLISHED)
     created_date = models.DateField(auto_now_add=True, verbose_name='Дата создания')
     changed_date = models.DateField(auto_now=True, verbose_name='Дата последнего изменения')
 
     class Meta:
         verbose_name = 'Продукт'
         verbose_name_plural = 'Продукты'
+        ordering = ('pk',)
+        permissions = [
+            (
+                'set_published',
+                'Can publish product'
+            ),
+            (
+                'change_description',
+                'Can change product description'
+            ),
+            (
+                'change_category',
+                'Can change product category'
+            )
+        ]
 
     def __str__(self):
         return self.name

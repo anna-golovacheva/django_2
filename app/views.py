@@ -1,12 +1,17 @@
 from django.conf import settings
+from django.contrib.auth.decorators import user_passes_test, \
+    permission_required
+from django.contrib.auth.mixins import UserPassesTestMixin
 from django.core.mail import send_mail
 from django.db import transaction
 from django.forms import inlineformset_factory
+from django.http import HttpResponseForbidden
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, \
     DeleteView
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404, redirect
 
-from app.forms import ProductForm, VersionForm
+from app.forms import ProductForm, VersionForm, ProductDescriptionForm, \
+    ProductCategoryForm
 from app.models import Product, Record, Version
 from django.urls import reverse_lazy, reverse
 
@@ -31,16 +36,9 @@ class ProductCreateView(CreateView):
         return super().form_valid(form)
 
 
-class ProductUpdateView(UpdateView):
+class ProductUpdateWithVersionView(UserPassesTestMixin, UpdateView):
     model = Product
     form_class = ProductForm
-    success_url = reverse_lazy('app:index')
-
-
-class ProductUpdateWithVersionView(UpdateView):
-    model = Product
-    form_class = ProductForm
-    success_url = reverse_lazy('app:index')
     template_name = 'app/product_with_version_form.html'
 
     def get_context_data(self, **kwargs):
@@ -68,18 +66,78 @@ class ProductUpdateWithVersionView(UpdateView):
 
         return super().form_valid(form)
 
+    def get_success_url(self):
+        pk = self.kwargs['pk']
+        return reverse('app:product_card', kwargs={'pk': pk})
+
+    def test_func(self):
+        product = self.get_object()
+        return self.request.user == product.user or self.request.user.has_perm(perm='app.change_product')
+
 
 class ProductListView(ListView):
     model = Product
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        if self.request.user.has_perm('app.set_published'):
+            return queryset
+        return queryset.filter(is_published='published')
 
 
 class ProductDetailView(DetailView):
     model = Product
 
+    def get_object(self, queryset=None):
+        self.object = super().get_object(queryset)
+        if self.object.is_published or self.request.user.has_perm('app:change_description'):
+            return self.object
+        raise HttpResponseForbidden
 
-class ProductDeleteView(DeleteView):
+
+@permission_required('app.set_published')
+def change_is_published(request, pk):
+    product = get_object_or_404(Product, pk=pk)
+    if product.is_published == Product.PUBLISHED:
+        product.is_published = Product.NOT_PUBLISHED
+    else:
+        product.is_published = Product.PUBLISHED
+    product.save()
+    return redirect(request.META.get('HTTP_REFERER'))
+
+
+class ProductDescriptionUpdateView(UserPassesTestMixin, UpdateView):
+    model = Product
+    form_class = ProductDescriptionForm
+    template_name = 'app/product_description.html'
+
+    def get_success_url(self):
+        pk = self.kwargs['pk']
+        return reverse('app:product_card', kwargs={'pk': pk})
+
+    def test_func(self):
+        return self.request.user.has_perm(perm='app.change_description')
+
+
+class ProductCategoryUpdateView(UserPassesTestMixin, UpdateView):
+    model = Product
+    form_class = ProductCategoryForm
+    template_name = 'app/product_category.html'
+
+    def get_success_url(self):
+        pk = self.kwargs['pk']
+        return reverse('app:product_card', kwargs={'pk': pk})
+
+    def test_func(self):
+        return self.request.user.has_perm(perm='app.change_category')
+
+
+class ProductDeleteView(UserPassesTestMixin, DeleteView):
     model = Product
     success_url = reverse_lazy('app:index')
+
+    def test_func(self):
+        return self.request.user.has_perm(perm='app.delete_product')
 
 
 class RecordListView(ListView):
@@ -121,3 +179,5 @@ class RecordDetailView(DetailView):
 class RecordDeleteView(DeleteView):
     model = Record
     success_url = reverse_lazy('app:records')
+
+

@@ -28,6 +28,18 @@ class ProductForm(forms.ModelForm):
         exclude = ('user',)
 
 
+class ProductDescriptionForm(ProductForm):
+    class Meta:
+        model = Product
+        fields = ('description',)
+
+
+class ProductCategoryForm(ProductForm):
+    class Meta:
+        model = Product
+        fields = ('category',)
+
+
 class VersionForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
