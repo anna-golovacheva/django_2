@@ -144,19 +144,25 @@ class RecordListView(ListView):
     model = Record
 
 
-class RecordCreateView(CreateView):
+class RecordCreateView(UserPassesTestMixin, CreateView):
     model = Record
     fields = ('title', 'content', 'preview', 'published')
     success_url = reverse_lazy('app:records')
 
+    def test_func(self):
+        return self.request.user.has_perm(perm='app.add_record')
 
-class RecordUpdateView(UpdateView):
+
+class RecordUpdateView(UserPassesTestMixin, UpdateView):
     model = Record
     fields = ('title', 'content', 'preview', 'published', 'views_count')
 
     def get_success_url(self):
         slug = self.kwargs['slug']
         return reverse('app:record_card', kwargs={'slug': slug})
+
+    def test_func(self):
+        return self.request.user.has_perm(perm='app.change_record')
 
 
 class RecordDetailView(DetailView):
@@ -176,8 +182,11 @@ class RecordDetailView(DetailView):
         return obj
 
 
-class RecordDeleteView(DeleteView):
+class RecordDeleteView(UserPassesTestMixin, DeleteView):
     model = Record
     success_url = reverse_lazy('app:records')
+
+    def test_func(self):
+        return self.request.user.has_perm(perm='app.delete_record')
 
 

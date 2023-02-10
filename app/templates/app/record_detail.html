@@ -11,8 +11,12 @@
             <h5 class="card-title">{{ object.content }}</h5>
               <img src="{% mediapath object.preview %}"  class="rounded mx-auto d-block" alt="" height="300">
             <p class="card-text">Просмотры: {{ object.views_count }}</p>
+              {% if perms.app.change_record %}
               <a href="{% url 'products:update_record' object.slug %}" class="btn btn-outline-secondary">Изменить запись</a>
+              {% endif %}
+                {% if perms.app.delete_record %}
               <a href="{% url 'products:delete_record' object.slug %}" class="btn btn-outline-danger">Удалить запись</a>
+              {% endif %}
               <br><br>
               <a href="{% url 'products:records' %}" class="btn btn-secondary">Все записи</a>
           </div>

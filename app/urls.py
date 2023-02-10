@@ -12,7 +12,7 @@ app_name = AppConfig.name
 
 urlpatterns = [
     path('', ProductListView.as_view(), name='index'),
-    path('contacts/', contacts, name='contacts'),
+    path('contacts/', login_required(contacts), name='contacts'),
     path('product_create/', login_required(ProductCreateView.as_view()), name='create_product'),
     path('product_update/<int:pk>/', login_required(ProductUpdateWithVersionView.as_view()), name='update_product'),
     path('product_update_description/<int:pk>/', login_required(ProductDescriptionUpdateView.as_view()), name='update_product_description'),
