@@ -1,30 +1,23 @@
+from django.conf import settings
+
 import datetime
 import pytz
-from django.conf import settings
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth.forms import UserChangeForm, UserCreationForm
+
 from django.contrib.auth.views import LoginView, PasswordChangeView, \
     PasswordResetView, PasswordResetConfirmView, PasswordResetDoneView, \
     PasswordResetCompleteView
-from django.core.mail import send_mail
-from django.shortcuts import render, redirect
-from django.urls import reverse_lazy
 from django.views.generic import UpdateView, CreateView
+
+from users.models import User
 
 from users.forms import CustomEditUserForm, CustomUserCreationForm, \
     CustomPasswordResetForm, CustomAuthenticationForm, \
     CustomChangePasswordForm, CustomResetConfirmForm
-from users.models import User
-from django.contrib.auth.hashers import make_password
 
+from django.shortcuts import render, redirect
+from django.urls import reverse_lazy
 
-def send_register_mail(message, email):
-    send_mail(
-        subject='активация',
-        message=message,
-        from_email=settings.EMAIL_HOST_USER,
-        recipient_list=[email]
-    )
+from app.services import send_register_mail, set_registration
 
 
 class CustomLoginView(LoginView):
@@ -40,12 +33,7 @@ class CustomRegisterView(CreateView):
     def form_valid(self, form):
         if form.is_valid():
             self.object = form.save()
-            password = form.data.get('password')
-            self.object.set_password(password)
-            self.object.token = make_password(self.object.password)[-15:]
-            self.object.token_expired = datetime.datetime.now().astimezone() + datetime.timedelta(hours=72)
-            self.object.is_active = False
-
+            self.object = set_registration(form, self.object)
             self.object.save()
 
             send_register_mail(
@@ -117,12 +105,3 @@ class CustomPasswordResetDoneView(PasswordResetDoneView):
 
 class CustomPasswordResetCompleteView(PasswordResetCompleteView):
     template_name = 'users/reset_complete.html'
-
-
-# def confirm_new_generated_password(request):
-#     current_user = User.objects.filter(email=request.GET.get('email')).first()
-#     current_user.password = current_user.new_password
-#     current_user.new_password = None
-#     current_user.save()
-#
-#     return redirect(...)

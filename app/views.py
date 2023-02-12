@@ -12,8 +12,10 @@ from django.shortcuts import render, get_object_or_404, redirect
 
 from app.forms import ProductForm, VersionForm, ProductDescriptionForm, \
     ProductCategoryForm
-from app.models import Product, Record, Version
+from app.models import Product, Record, Version, Category
 from django.urls import reverse_lazy, reverse
+
+from app.services import get_categories_from_cache
 
 
 def contacts(request):
@@ -83,6 +85,17 @@ class ProductListView(ListView):
         if self.request.user.has_perm('app.set_published'):
             return queryset
         return queryset.filter(is_published='published')
+
+    def get_context_data(self, **kwargs):
+        context_data = super().get_context_data(**kwargs)
+        context_data['categories'] = get_categories_from_cache()
+        return context_data
+
+
+class CategoryListView(ListView):
+    model = Category
+    queryset = get_categories_from_cache()
+    template_name = 'app/category_list.html'
 
 
 class ProductDetailView(DetailView):
